@@ -1,0 +1,120 @@
+---
+title: "R Replication Final Code"
+author: "Max Dippel"
+date: "11/16/2021"
+output: html_document
+---
+
+```{r}
+library(lme4)
+library(ggplot2)
+library(Hmisc)
+library(ggpubr)
+```
+
+```{r}
+data <- read.csv("mouse_lemur_data.csv", header = TRUE)
+data$species_number <- as.numeric(as.factor(data$scientificName))
+data$seedling_mm <- as.numeric(data$seedling_length_mm)
+```
+
+##### Loading the data into R the first step of the analysis. This was more complicated than I intially realized because every numerical variable was actually loaded in as a factor When attempted to graph the results or run models, the results would have an error or not look as it should have. I used as.numeric to create new numeric varaibles in the data set which the R could read easily. 
+
+#### Subsetting the data into something workable based on the experiment and then only the seeds which germinated 
+#### First for Microcebus rufus
+
+```{r}
+rufus <- subset(data, disperser == "microcebus_rufus")
+rufus_petri <- subset(rufus, experiment == "Petri dish")
+rufus_petri
+rufus_ground <- subset(rufus, experiment == "Forest ground")
+rufus_petri_yes <- subset(rufus_petri, germination_state == "yes")
+rufus_ground_yes <- subset(rufus_ground, germination_state == "yes")
+```
+
+#### Then for Microcebus jollyae
+```{r}
+jollyae <- subset(data, disperser == "microcebus_jollyae")
+jollyae_petri <- subset(jollyae, experiment == "Petri dish")
+jollyae_closed <- subset(jollyae, experiment == "Closed")
+jollyae_semi <- subset(jollyae, experiment == "Semi-closed")
+jollyae_petri_yes <- subset(jollyae_petri, germination_state == "yes")
+jollyae_closed_yes <- subset(jollyae_closed, germination_state == "yes")
+jollyae_semi_yes <- subset(jollyae_semi, germination_state == "yes")
+```
+
+```{r}
+# This is the violin first graph of the rufus petri dish experiment
+
+ggplot(data = rufus_petri_yes, aes(x = treatment, y = seedling_mm)) +
+  geom_point() + theme_bw() + geom_violin( aes(colour = treatment, fill = treatment)) +
+  stat_summary(fun = mean, geom="point", shape=23, size=5, fill = "black") +
+  labs(title = "Microcebus rufus",subtitle = "Petri dish", 
+       y = "mean seedling length (mm)", x = "Treatment") +
+  theme(plot.title = element_text(face = "italic")) + 
+  theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(values=c("darkgreen", "darkorange3")) +
+  scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
+  theme(legend.position = "None")
+
+# This caption is to be added later using word (as done in the original study)
+#  N = 37(75) 51(75) 
+```
+
+```{r}
+# This second graph is a series of three
+# It is complete with axis labels, a title, subtitles, 
+# I had to go through a lot of work to hide the y axis on two of them so that they would all 
+# fit together without excess information
+
+
+# First we have the 
+plot1 <- ggplot(data = jollyae_petri_yes, aes(x = treatment, y = seedling_mm)) +
+   theme_bw() + geom_violin( aes(colour = treatment, fill = treatment)) +
+  stat_summary(fun = mean, geom="point", shape=23, size=5, fill = "black") + 
+  ylim(0,50) + 
+  labs(title = "Microcebus jollyae",subtitle = "Petri dish", 
+       y = "mean seedling length (mm)", x = "Treatment") +
+  theme(plot.title = element_text(face = "italic")) + 
+  theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(values=c("darkgreen", "darkorange3")) +
+  scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
+  theme(legend.position = "None")
+plot1
+
+plot2 <- ggplot(data = jollyae_semi_yes, aes(x = treatment, y = seedling_mm)) +
+   theme_bw() + geom_violin( aes(colour = treatment, fill = treatment)) +
+  stat_summary(fun = mean, geom="point", shape=23, size=5, fill = "black") +
+  ylim(0,50) +
+  labs(title = "",subtitle = "Semi-shaded", 
+       y = "mean seedling length (mm)", x = "Treatment") +
+  theme(plot.title = element_text(face = "italic")) + 
+  theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(values=c("darkgreen", "darkorange3")) +
+  scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
+  theme(legend.position = "None") + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.title.y = element_blank())
+plot2
+
+plot3 <- ggplot(data = jollyae_closed_yes, aes(x = treatment, y = seedling_mm)) +
+  theme_bw() + geom_violin( aes(colour = treatment, fill = treatment)) +
+  stat_summary(fun = mean, geom="point", shape=23, size=5, fill = "black") +
+  ylim(0,50) +
+  labs(title = "",subtitle = "Shaded", 
+       y = "mean seedling length (mm)", x = "Treatment") +
+  theme(plot.title = element_text(face = "italic")) + 
+  theme(plot.subtitle = element_text(hjust = 0.5)) +
+  scale_color_manual(values=c("darkgreen", "darkorange3")) +
+  scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
+  theme(legend.position = "None") + 
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.title.y = element_blank())
+plot3
+ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
+
+# Just like the first graph, a caption is to be added later using word (as done in the original study)
+```
+
