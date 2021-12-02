@@ -1,38 +1,105 @@
 ---
-title: "R Replication Final Code"
+title: "R Replication Assignment"
 author: "Max Dippel"
 date: "11/16/2021"
 output: html_document
 ---
 
-```{r}
+# Description of Assignment
+
+<br> 
+
+#### Today, I will be discussing my attempts to replicate "The role of nocturnal omnivorous lemurs as seed dispersers in Malagasy rain forests" by Ramananjato et al. published in biotropica in 2020. First though, I would like to mention that I had meant to discuss another study with you all today. This paper, "Crop Feeding by Brown Howlers (Alouatta guariba clamitans) in Forest Fragments: The Conservation Value of Cultivated Species" by Oscar Chaves and Julio Cesar Bicca-Marques, proved difficult to replicate for a variety of reasons. The study was the analysis of the fruits howler monkeys ate of different species in three different orchards. However, the data set did not include the basal area of each species within each orchard making it impossible to calculate the fruit avalibility index of each species. Secondly, a link in the study to the market value of each fruit species was no longer operational. This made it impossible to calculate the economic value of the fruit which was lost due to the crop feeding. 
+
+<br> 
+
+#### So, I moved on to the next paper anticipating less problems. The paper Ramananjato et al. 2020 analyzes the role of two species of mouse lemur, *Microcebus rufus* and *Microcebus jollyae*, in seed dispersal in Madagascar's forest. The researchers collected seeds which had been defecated by mouse lemurs and seeds which had fallen on the ground them subjected them to various growth experiments. For *Microcebus rufus*, one experiment looked at seed growth in a petri dish setting and the other looked at seed growth on the forest ground. For *Microcebus jollyae*, experiments were conducted in a petri dish, in a semi-shaded plot and a shaded plot. From these experiments, the researchers compared germination rate, germination time and seedling length after a certain period of time between defecated and control seeds using mixed effect models and survival analysis. 
+
+<br>
+
+<center> <img src = "https://upload.wikimedia.org/wikipedia/commons/4/4d/Microcebus-rufus.jpg" width="500" height="500"> </center>
+
+<br>
+
+##### First load the packages. There are quite a lot of them for this analysis.
+
+```{r echo=T, results='hide', message=FALSE,}
 library(lme4)
 library(ggplot2)
+library(ggfortify)
 library(Hmisc)
 library(ggpubr)
+library(MuMIn)
+library(tidyverse)
+library(survival)
 ```
 
-```{r}
+##### Loading the data into R the first step of the analysis. This was more complicated than I intially realized because every numerical variable was actually loaded in as a factor When attempted to graph the results or run models, the results would have an error or not look as it should have. I used as.numeric to create new numeric varaibles in the data set which the R could read easily. 
+
+```{r echo=T, results='hide', warning=FALSE}
 data <- read.csv("mouse_lemur_data.csv", header = TRUE)
 data$species_number <- as.numeric(as.factor(data$scientificName))
 data$seedling_mm <- as.numeric(data$seedling_length_mm)
 ```
 
-##### Loading the data into R the first step of the analysis. This was more complicated than I intially realized because every numerical variable was actually loaded in as a factor When attempted to graph the results or run models, the results would have an error or not look as it should have. I used as.numeric to create new numeric varaibles in the data set which the R could read easily. 
+##### Subsetting the data into something workable based on the experiment and then only the seeds which germinated. This is where we can begin to see that the data set I have is not the data set which is presented in the paper. The number of observations is incorrect in many cases. 
 
-#### Subsetting the data into something workable based on the experiment and then only the seeds which germinated 
-#### First for Microcebus rufus
+##### First I will subset the data for seeds dispersed by *Microcebus rufus*
 
 ```{r}
+# Subsetting the data to only include seeds dispersed by microcebus rufus
 rufus <- subset(data, disperser == "microcebus_rufus")
+# Subsetting the data to only include seeds dispersed by microcebus rufus in the petri dish experiment
 rufus_petri <- subset(rufus, experiment == "Petri dish")
-rufus_petri
-rufus_ground <- subset(rufus, experiment == "Forest ground")
+nrow(rufus_petri)
+# The number of total observations in the experiment is 685
+# Now, I am subsettung the data to only have seeds which germinated 
 rufus_petri_yes <- subset(rufus_petri, germination_state == "yes")
-rufus_ground_yes <- subset(rufus_ground, germination_state == "yes")
+nrow(rufus_petri_yes)
+# The number of germinated seeds is 121
 ```
 
-#### Then for Microcebus jollyae
+
+```{r echo=T, results='hide'}
+# This creates summary statistics for seedling growth for each species
+rufus_petri_yes_summary <- rufus_petri_yes %>% 
+  group_by(scientificName, treatment) %>%
+  summarise(seedling_mean = mean(seedling_mm),
+            N = n())
+####  This line modifies the summary statistics to include only the species for which there is a defecated and control. This step was not explicitly stated anywhere in the paper and it took me a very long time to figure it out.   
+rufus_petri_yes_summary_modified <- rufus_petri_yes_summary[-c(3, 4, 5, 6, 7, 12), ]
+rufus_petri_yes_summary_modified
+sum(rufus_petri_yes_summary_modified$N)
+# 88
+```
+<br>
+
+##### The number of total observations in the experiment is 685. The number of observations germinated is 121. The number of observations after only including species with defecated and control seeds is 88. However, the paper states 150 is total sample size and 88 observations are actually analyzed. 
+
+#### In this case, the researchers seemed to have used the final summary (n=88) for the number of observations actually analyzed (n=88). Concerningly, I do not know where the number 150 as the total number of observations comes from. 
+
+<br>
+```{r}
+# Subsetting the data to only include seeds dispersed by microcebus rufus in the petri dish experiment
+rufus_ground <- subset(rufus, experiment == "Forest ground")
+nrow(rufus_ground)
+# The number of total observations in the experiment is 231
+# Now, I am subsettung the data to only have seeds which germinated
+rufus_ground_yes <- subset(rufus_ground, germination_state == "yes")
+nrow(rufus_ground_yes)
+#The number of germinated seeds is 7
+```
+
+##### This experiment does not need a filtering for only species with defecated and control seeds because they are all the same species
+
+##### The number of total observations in experiment is 231. The number of observations germinated is 7. The umber of observations after only including species with defecated and control seeds is 7 (they are all the same species). However, the paper states 75 is total sample size and 7 are actually analyzed. 
+
+##### The researchers seemed to have used the final summary (n=7) for the number of observations actually analyzed (n=7). Concerningly, I have no idea where the number 75 as the total number of observations comes from. 
+
+<br>
+
+##### Now, I will subset the data for seeds dispersed by *Microcebus jollyae*
+
 ```{r}
 jollyae <- subset(data, disperser == "microcebus_jollyae")
 jollyae_petri <- subset(jollyae, experiment == "Petri dish")
@@ -117,4 +184,20 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 
 # Just like the first graph, a caption is to be added later using word (as done in the original study)
 ```
+
+
+<br>
+
+<center> <img src = "https://upload.wikimedia.org/wikipedia/commons/f/fd/Brown_Mouse_Lemur%2C_Nosy_Mangabe%2C_Madagascar_2.jpg" width="500" height="500"> </center>
+
+<br>
+
+
+<br>
+
+<center> <img src = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Microcebus_rufus_001.jpg" width="500" height="500"> </center>
+
+<br>
+
+
 
