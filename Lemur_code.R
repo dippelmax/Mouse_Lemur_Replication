@@ -10,6 +10,7 @@
 
 library(lme4)
 library(ggplot2)
+library(ggfortify)
 library(Hmisc)
 library(ggpubr)
 library(MuMIn)
@@ -277,59 +278,25 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 
 ##################### graph 2, survival analysis #######################
 
-rufus_petri_yes
-
-ggplot(data = rufus_ground_yes, aes(x = germ_time, y = 1-cumsum(germ_time)/sum(germ_time))) + geom_line()
-
-
-
 # install.packages("survival")
 library(survival)
 ?coxph()
 
-# install.packages("KMsurv")
-library(KMsurv)
-?lifetab()
-
-date <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
-site <- c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2)
-days <- c(9, 13, 21, 21, 21, 7, 9, 11, 17, 21, 5, 7, 9, 9, 11, 15, 5, 7, 7, 9)
-status <- c(1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1)
-fake_data <- cbind(date, site, days, status)
-fake_data2 <- data.frame(fake_data)
-
 rufus_petri_yes
+rufus_petri_yes$status <- rep(1, times = 121, length.out = NA, each = 1)
+rufus_petri_yes_km_fit <- survfit(Surv(germ_time, status) ~ treatment, data = rufus_petri_yes)
+rufus_petri_yes_km_fit
+summary(rufus_petri_yes_km_fit, times = c(1,15,30,45*(1:10)))
+autoplot(rufus_petri_yes_km_fit)
 
-cox.date <- coxph(Surv(days, status) ~ date + site, data=fake_data2)
-print(summary(cox.date))
+rufus_petri_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=rufus_petri_yes)
+summary(rufus_petri_yes_cox)
 
-
-cox_mod1 <- 
 # https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ 
-Surv()
 
-data.df <- data.frame()
-t.endpts <- c(33,33,33,33,23,23,23)
-# Create vector of numbers of lost seeds in intervals,
-# with the number for the last interval including ungerminated seeds that remain
-nlost <-rep(0, length(t.endpts)-1)
-nlost[length(nlost)] <- data.df$n.planted - data.df$n.germ.total
-# Create vector of numbers of germination events in intervals
-nevent <- c(as.vector(data.df[1, 6:16], mode="integer"), 0)
-# Create life table
-life.table <- lifetab(t.endpts, 100, nlost, nevent)
-print(life.table)
-# Plot the life-table survivor function
-# plot(t.endpts[1:12], life.table[, 5], type="o", pch=16, lwd=2, ylim=c(0,1),
-     main="Life-Table Survivor Function", xlab="time [days]", ylab="probability
-    of not germinating")
+
+################################# The End ########################################
 
 
 
 
-
-######################### sample code for a survival graph ##########################
-
-
-
-#############################################
