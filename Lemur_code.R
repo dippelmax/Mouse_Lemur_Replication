@@ -15,6 +15,8 @@ library(Hmisc)
 library(ggpubr)
 library(MuMIn)
 library(tidyverse)
+library(survival)
+library(knitr)
 
 data <- read.csv("mouse_lemur_data.csv", header = TRUE)
 data$species_number <- as.numeric(as.factor(data$scientificName))
@@ -143,14 +145,27 @@ jollyae_semi_yes <- subset(jollyae_semi, germination_state == "yes")
 nrow(jollyae_semi_yes)
 # 233
 # This creates summary statistics for seedling growth for each species
-jollyae_closed_yes_summary <- jollyae_closed_yes %>% 
+jollyae_semi_yes_summary <- jollyae_semi_yes %>% 
   group_by(scientificName, treatment) %>%
   summarise(seedling_mean = mean(seedling_mm),
             N = n())
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
-jollyae_closed_yes_summary_modified <- jollyae_closed_yes_summary[-c(5, 6), ]
-jollyae_closed_yes_summary_modified
-sum(jollyae_closed_yes_summary_modified$N)
+jollyae_semi_yes_summary_modified <- jollyae_semi_yes_summary
+jollyae_semi_yes_summary_modified
+sum(jollyae_semi_yes_summary_modified$N)
+
+# Number of total observations in experiment is 660
+# Number of observations germinated is 233
+# Number of observations after only including species 
+# with defecated and control seeds is 233
+# Paper states 660 is total sample size 
+# Paper states 233 are actually analyzed
+
+# The researchers seemed to have used the final summary (n=233) for
+# the number of observations actually analyzed (n=233). There were no single 
+# experiment species so there are no differences between the number germinated 
+# and the final summary
+
 
 
 ############## Analysis 1: mixed effect models ###################
@@ -160,7 +175,7 @@ rufus_petri_yes_summary <- rufus_petri_yes %>%
   summarise(seedling_mean = mean(seedling_mm),
             N = n())
 
-####  This line modifies the summary statistics to include only the species for which there is a germinated and 
+####  This line modifies the summary statistics to include only the species for which there is a germinated and control treatment
 
 rufus_petri_yes_summary_modified <- rufus_petri_yes_summary[-c(3, 4, 5, 6, 7, 12), ]
 rufus_petri_yes_summary_modified
@@ -169,10 +184,6 @@ rufus_petri_yes_summary_modified
 
 # N is finally 88
 
-# REML = TRUE, intercept model
-lme_rufus_petri_yes_summary_modified1 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 | scientificName))
-summary(lme_rufus_petri_yes_summary_modified1)
-# Not the correct beta
 
 # REML = FALSE, intercept model
 lme_rufus_petri_yes_summary_modified2 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 | scientificName), REML = FALSE)
@@ -277,26 +288,46 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 
 
 ##################### graph 2, survival analysis #######################
-
-# install.packages("survival")
-library(survival)
-?coxph()
-
+# This is the survival analysis. 
 rufus_petri_yes
+##### Creating a status colum to indicate that all of the seeds germinated at some point
 rufus_petri_yes$status <- rep(1, times = 121, length.out = NA, each = 1)
+
+#### Next we use the survival function to make a survival curve 
 rufus_petri_yes_km_fit <- survfit(Surv(germ_time, status) ~ treatment, data = rufus_petri_yes)
 rufus_petri_yes_km_fit
-summary(rufus_petri_yes_km_fit, times = c(1,15,30,45*(1:10)))
-autoplot(rufus_petri_yes_km_fit)
+# This give a nice summary of the analysis
+summary(rufus_petri_yes_km_fit, times = c(1,15,30,45,60,75,90))
 
+# Next we plot the survival fit and make it look like the graph in the paper
+rufus_petri_yes_km_plot <- autoplot(rufus_petri_yes_km_fit) 
+rufus_petri_yes_km_plot + labs(title = "Microcebus rufus",subtitle = "Petri dish experiment", 
+                           y = "Probability of germinating", x = "Time (days)") +
+  theme(plot.title = element_text(face = "italic")) +
+  scale_color_manual(values=c("darkgreen", "darkorange3")) +
+  scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
+  geom_text(x=75, y=.2, label="p < 0.0001") + theme(legend.position="bottom")
+
+# One problem though is that this graph is upside down. I used scale_y_reverse() to reverse the scale,
+# but now the numbers are wrong and the annotated p value is gone. 
+rufus_petri_yes_km_plot + labs(title = "Microcebus rufus",subtitle = "Petri dish experiment", 
+                               y = "Probability of germinating", x = "Time (days)") +
+  theme(plot.title = element_text(face = "italic")) +
+  scale_color_manual(values=c("darkgreen", "darkorange3")) +
+  scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
+  geom_text(x=75, y=.75, label="p < 0.0001") + theme(legend.position="bottom") + scale_y_reverse()
+
+# This the the Cox test with fragility
+# The summary includes the Chi square value, the degrees of freedom and the p-value
+# Those are all things which I need to create the table in the paper
 rufus_petri_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=rufus_petri_yes)
 summary(rufus_petri_yes_cox)
+
+
 
 # https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ 
 
 
 ################################# The End ########################################
-
-
 
 
