@@ -110,8 +110,12 @@ jollyae_closed_yes <- subset(jollyae_closed, germination_state == "yes")
 jollyae_semi_yes <- subset(jollyae_semi, germination_state == "yes")
 ```
 
+
+
+## Violin graphs
+##### This is the violin first graph of the *Microcebus rufus* petri dish experiment
+
 ```{r}
-# This is the violin first graph of the rufus petri dish experiment
 
 ggplot(data = rufus_petri_yes, aes(x = treatment, y = seedling_mm)) +
   geom_point() + theme_bw() + geom_violin( aes(colour = treatment, fill = treatment)) +
@@ -127,6 +131,10 @@ ggplot(data = rufus_petri_yes, aes(x = treatment, y = seedling_mm)) +
 # This caption is to be added later using word (as done in the original study)
 #  N = 37(75) 51(75) 
 ```
+
+##### Here is the original figure
+
+![alt text here](/Users/maxdippel/Desktop/BI 588/Mouse_Lemur_Replication/Microcebus_rufus_violin_graph.png)
 
 ```{r}
 # This second graph is a series of three
