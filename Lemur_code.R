@@ -23,6 +23,26 @@ data$species_number <- as.numeric(as.factor(data$scientificName))
 data$seedling_mm <- as.numeric(data$seedling_length_mm)
 data$germ_time <- as.numeric(data$germination_time)
 
+
+########################################################################
+#
+#
+#
+#
+#
+#
+##################### Subsetting data #######################
+#
+#
+#
+#
+#
+#
+#########################################################################
+
+
+
+
 # Subsetting the data to only include seeds dispersed by microcebus rufus
 rufus <- subset(data, disperser == "microcebus_rufus")
 rufus_petri <- subset(rufus, experiment == "Petri dish")
@@ -167,22 +187,24 @@ sum(jollyae_semi_yes_summary_modified$N)
 # and the final summary
 
 
+########################################################################
+#
+#
+#
+#
+#
+#
+##################### Analysis 1: mixed effect models #######################
+#
+#
+#
+#
+#
+#
+#########################################################################
 
-############## Analysis 1: mixed effect models ###################
 
-rufus_petri_yes_summary <- rufus_petri_yes %>% 
-  group_by(scientificName, treatment) %>%
-  summarise(seedling_mean = mean(seedling_mm),
-            N = n())
-
-####  This line modifies the summary statistics to include only the species for which there is a germinated and control treatment
-
-rufus_petri_yes_summary_modified <- rufus_petri_yes_summary[-c(3, 4, 5, 6, 7, 12), ]
 rufus_petri_yes_summary_modified
-
-# only certain species have a defecated and control treatment 
-
-# N is finally 88
 
 
 # REML = FALSE, intercept model
