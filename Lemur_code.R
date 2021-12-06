@@ -219,7 +219,6 @@ sum(jollyae_semi_yes_summary_modified$N)
 # REML = FALSE, intercept model
 lme_rufus_petri_yes_summary_modified1 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
 summary(lme_rufus_petri_yes_summary_modified1)
-# not the correct beta
 
 # β = 13.549
 # z = 
@@ -249,7 +248,19 @@ summary(lme_rufus_petri_yes_summary_modified3)
 # number of observations to support a model which is this complex. I will only use intercept 
 # models for the rest of the analysis. 
 
+# After we have determined the model we will use, we can get the other parameters by running statitical test
 
+null1 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null1)
+
+anova(null1, lme_rufus_petri_yes_summary_modified1, test = "Chisq")
+r.squaredGLMM(lme_rufus_petri_yes_summary_modified1)
+
+# β = 13.549
+# z = 3.18796
+# p = 0.0742
+# R2M = 0.2205152
+# R2C = 0.6833415
 
 # Now I will run the rufus dispered forest ground experiment
 
@@ -270,20 +281,33 @@ summary(lme_jollyae_petri_yes_summary_modified1)
 lme_jollyae_semi_yes_summary_modified1 <- lmer(data = jollyae_semi_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
 summary(lme_jollyae_semi_yes_summary_modified1)
 
+null2 <- lmer(data = jollyae_semi_yes_summary_modified, seedling_mean ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null2)
+
+anova(null2, lme_jollyae_semi_yes_summary_modified1, test = "Chisq")
+r.squaredGLMM(lme_jollyae_semi_yes_summary_modified1)
+
 # β = 1.774
-# z = 
-# p < 
-# R2M = 
-# R2C = 
+# z = 0.7167
+# p = 0.3972 
+# R2M = 0.04079902
+# R2C = 0.636132
 
 lme_jollyae_closed_yes_summary_modified1 <- lmer(data = jollyae_closed_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
 summary(lme_jollyae_closed_yes_summary_modified1)
 
+null3 <- lmer(data = jollyae_closed_yes_summary_modified, seedling_mean ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null3)
+
+anova(null3, lme_jollyae_closed_yes_summary_modified1, test = "Chisq")
+r.squaredGLMM(lme_jollyae_closed_yes_summary_modified1)
+
+
 # β = 7.300
-# z = 
-# p < 
-# R2M = 
-# R2C =
+# z = 6.1518
+# p = 0.01313
+# R2M = 0.8297392
+# R2C = 0.8297654
 
 #
 #
@@ -301,11 +325,75 @@ summary(lme_jollyae_closed_yes_summary_modified1)
 lme_rufus_petri_yes_summary_modified1_germ_time <- lmer(data = rufus_petri_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
 summary(lme_rufus_petri_yes_summary_modified1_germ_time)
 
+null4 <- lmer(data = rufus_petri_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null4)
+
+anova(null4, lme_rufus_petri_yes_summary_modified1_germ_time, test = "Chisq")
+r.squaredGLMM(lme_rufus_petri_yes_summary_modified1_germ_time)
+
+
 # β = -15.97
-# z = 
-# p < 
-# R2M = 
-# R2C =
+# z = 0.9894
+# p = 0.3199
+# R2M = 0.1307745
+# R2C = 0.1307745
+
+# Not doing the analysis for Microcebus rufus forest ground experiment (see above)
+
+# Running the mixed effect model for jollyae dispersed seeds in the petri dish experiment
+
+lme_jollyae_petri_yes_summary_modified1_germ_time <- lmer(data = jollyae_petri_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_petri_yes_summary_modified1_germ_time)
+
+# Error: grouping factors must have > 1 sampled level
+
+# So since it is the mean germination time, the comparison only has two points. 
+# I cannot run this analysis
+
+# Running the mixed effect model for jollyae dispersed seeds in the semi-shaded plot experiment
+
+lme_jollyae_semi_yes_summary_modified1_germ_time <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_semi_yes_summary_modified1_germ_time)
+
+null4 <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null4)
+
+anova(null4, lme_jollyae_semi_yes_summary_modified1_germ_time, test = "Chisq")
+r.squaredGLMM(lme_jollyae_semi_yes_summary_modified1_germ_time)
+
+
+# β = -5.183 
+# z = 0.4874
+# p = 0.4851
+# R2M = 0.04586151
+# R2C = 0.3807093
+
+lme_jollyae_closed_yes_summary_modified1_germ_time <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_closed_yes_summary_modified1_germ_time)
+
+null4 <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null4)
+
+anova(null4, lme_jollyae_closed_yes_summary_modified1_germ_time, test = "Chisq")
+r.squaredGLMM(lme_jollyae_closed_yes_summary_modified1_germ_time)
+
+
+# β = 0.6833
+# z = 0.01
+# p = 0.923
+# R2M = 0.003328367
+# R2C = 0.003328367
+
+#
+#
+#
+#
+# I will now code for the mixed effect model comparing Germination ratio across the 
+# fixed effect of treatment and the random effect of species
+#
+#
+#
+#
 
 ########################################################################
 #
