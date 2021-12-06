@@ -54,7 +54,7 @@ nrow(rufus_petri_yes)
 # This creates summary statistics for seedling growth for each species
 rufus_petri_yes_summary <- rufus_petri_yes %>% 
   group_by(scientificName, treatment) %>%
-  summarise(seedling_mean = mean(seedling_mm),
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
             N = n())
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
 rufus_petri_yes_summary_modified <- rufus_petri_yes_summary[-c(3, 4, 5, 6, 7, 12), ]
@@ -83,7 +83,12 @@ nrow(rufus_ground_yes)
 # This experiment does not need a filtering for only species with defecated 
 # and control seeds because they are all the same species
 
+# This might useful later though
 
+rufus_ground_yes_summary <- rufus_ground_yes %>% 
+  group_by(scientificName, treatment) %>%
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
+            N = n())
 
 # Number of total observations in experiment is 231
 # Number of observations germinated is 7
@@ -109,7 +114,7 @@ nrow(jollyae_petri_yes)
 # This creates summary statistics for seedling growth for each species
 jollyae_petri_yes_summary <- jollyae_petri_yes %>% 
   group_by(scientificName, treatment) %>%
-  summarise(seedling_mean = mean(seedling_mm),
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
             N = n())
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
 jollyae_petri_yes_summary_modified <- jollyae_petri_yes_summary[-c(1, 2, 3), ]
@@ -137,7 +142,7 @@ nrow(jollyae_closed_yes)
 # This creates summary statistics for seedling growth for each species
 jollyae_closed_yes_summary <- jollyae_closed_yes %>% 
   group_by(scientificName, treatment) %>%
-  summarise(seedling_mean = mean(seedling_mm),
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
             N = n())
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
 jollyae_closed_yes_summary_modified <- jollyae_closed_yes_summary[-c(5, 6), ]
@@ -167,7 +172,7 @@ nrow(jollyae_semi_yes)
 # This creates summary statistics for seedling growth for each species
 jollyae_semi_yes_summary <- jollyae_semi_yes %>% 
   group_by(scientificName, treatment) %>%
-  summarise(seedling_mean = mean(seedling_mm),
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
             N = n())
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
 jollyae_semi_yes_summary_modified <- jollyae_semi_yes_summary
@@ -203,36 +208,121 @@ sum(jollyae_semi_yes_summary_modified$N)
 #
 #########################################################################
 
+# I am starting with the mixed effect model comparing seedling length across the 
+# fixed effect of treatment and the random effect of species
 
-rufus_petri_yes_summary_modified
+# Running the mixed effect model for rufus dispersed seeds in the petri dish experiment
 
+# The study did not tell me wether the random effects of the model were slope, 
+# intercept or slope and intercept. I tried all three for the first experiment. 
 
 # REML = FALSE, intercept model
-lme_rufus_petri_yes_summary_modified2 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 | scientificName), REML = FALSE)
-summary(lme_rufus_petri_yes_summary_modified2)
+lme_rufus_petri_yes_summary_modified1 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_petri_yes_summary_modified1)
 # not the correct beta
 
-# REML = TRUE , slope model
-lme_rufus_petri_yes_summary_modified3 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 + treatment | scientificName))
-summary(lme_rufus_petri_yes_summary_modified3)
-# will not run, too many effects
+# β = 13.549
+# z = 
+# p < 
+# R2M = 
+# R2C = 
 
 # REML = FALSE , slope model
-lme_rufus_petri_yes_summary_modified4 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 + treatment | scientificName), REML = FALSE)
-summary(lme_rufus_petri_yes_summary_modified4)
-# will not run, too many effects
+lme_rufus_petri_yes_summary_modified2 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 + treatment | scientificName), REML = FALSE)
+summary(lme_rufus_petri_yes_summary_modified2)
+# will not run 
 
-# REML = TRUE , slope and intercept
-lme_rufus_petri_yes_summary_modified4 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 + treatment | scientificName))
-summary(lme_rufus_petri_yes_summary_modified4)
-# will not run, too many effects
+# Error: number of observations (=8) <= number of random effects (=8) 
+# for term (1 + treatment | scientificName); the random-effects parameters 
+# and the residual variance (or scale parameter) are probably unidentifiable
 
 # REML = FALSE , slope and intercept model
-lme_rufus_petri_yes_summary_modified5 <- lmer(data = rufus_petri_yes_summary_modified, mean ~ treatment + (1 | scientificName) + (1 + treatment | scientificName), REML = FALSE)
-summary(lme_rufus_petri_yes_summary_modified4)
-# will not run, too many effects
+lme_rufus_petri_yes_summary_modified3 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName) + (1 + treatment | scientificName), REML = FALSE)
+summary(lme_rufus_petri_yes_summary_modified3)
+# will not run
 
-################ Graph 1: violins ###################
+# Error: number of observations (=8) <= number of random effects (=8) 
+# for term (1 + treatment | scientificName); the random-effects parameters 
+# and the residual variance (or scale parameter) are probably unidentifiable
+
+# Based on some research, the error is telling me that I do not have a sufficient 
+# number of observations to support a model which is this complex. I will only use intercept 
+# models for the rest of the analysis. 
+
+
+
+# Now I will run the rufus dispered forest ground experiment
+
+lme_rufus_ground_yes_summary_modified1 <- lmer(data = rufus_ground_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_ground_yes_summary_modified1)
+
+# Impossible to do analysis with no more than one treatment 
+
+# Now I will do the analysis for the the experiment from jollyae dispersed seeds in the petri dish
+
+lme_jollyae_petri_yes_summary_modified1 <- lmer(data = jollyae_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_petri_yes_summary_modified1)
+
+# seedling length = 0, cannot compare between treatments
+
+# Now I will do the analysis for the the experiment from jollyae dispersed seeds in the semi-shaded plot experiment
+
+lme_jollyae_semi_yes_summary_modified1 <- lmer(data = jollyae_semi_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_semi_yes_summary_modified1)
+
+# β = 1.774
+# z = 
+# p < 
+# R2M = 
+# R2C = 
+
+lme_jollyae_closed_yes_summary_modified1 <- lmer(data = jollyae_closed_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_closed_yes_summary_modified1)
+
+# β = 7.300
+# z = 
+# p < 
+# R2M = 
+# R2C =
+
+#
+#
+#
+#
+# I will now code for the mixed effect model comparing germination time across the 
+# fixed effect of treatment and the random effect of species
+#
+#
+#
+#
+
+# Running the mixed effect model for rufus dispersed seeds in the petri dish experiment
+
+lme_rufus_petri_yes_summary_modified1_germ_time <- lmer(data = rufus_petri_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_petri_yes_summary_modified1_germ_time)
+
+# β = -15.97
+# z = 
+# p < 
+# R2M = 
+# R2C =
+
+########################################################################
+#
+#
+#
+#
+#
+#
+##################### Graph 1: violins #######################
+#
+#
+#
+#
+#
+#
+#########################################################################
+
 
 # Mean seedling length after three-month monitoring of planted seed
 
@@ -300,7 +390,6 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 
 
 # Points of departure 
-# Christmas colors
 # Included all points (original graph cut of at 60 with an "a" on top)
 
 # Notes 
