@@ -17,10 +17,6 @@ output: html_document
 
 <br>
 
-<center> <img src = "https://upload.wikimedia.org/wikipedia/commons/4/4d/Microcebus-rufus.jpg" width="500" height="500"> </center>
-
-<br>
-
 ##### First load the packages. There are quite a lot of them for this analysis.
 
 ```{r echo=T, results='hide', message=FALSE,}
@@ -136,6 +132,10 @@ ggplot(data = rufus_petri_yes, aes(x = treatment, y = seedling_mm)) +
 
 ![alt text here](/Users/maxdippel/Desktop/BI 588/Mouse_Lemur_Replication/Microcebus_rufus_violin_graph.png)
 
+<img src="https://ik.imagekit.io/ikmedia/women-dress-2.jpg" 
+     width="400" 
+     height="500" />
+
 ```{r}
 # This second graph is a series of three
 # It is complete with axis labels, a title, subtitles, 
@@ -196,16 +196,7 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 
 <br>
 
-<center> <img src = "https://upload.wikimedia.org/wikipedia/commons/f/fd/Brown_Mouse_Lemur%2C_Nosy_Mangabe%2C_Madagascar_2.jpg" width="500" height="500"> </center>
+###### <center> <img src = "https://upload.wikimedia.org/wikipedia/commons/f/fd/Brown_Mouse_Lemur%2C_Nosy_Mangabe%2C_Madagascar_2.jpg" width="500" height="500"> </center>
 
 <br>
-
-
-<br>
-
-<center> <img src = "https://upload.wikimedia.org/wikipedia/commons/c/c8/Microcebus_rufus_001.jpg" width="500" height="500"> </center>
-
-<br>
-
-
 
