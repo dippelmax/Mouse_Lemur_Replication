@@ -130,11 +130,7 @@ ggplot(data = rufus_petri_yes, aes(x = treatment, y = seedling_mm)) +
 
 ##### Here is the original figure
 
-![alt text here](/Users/maxdippel/Desktop/BI 588/Mouse_Lemur_Replication/Microcebus_rufus_violin_graph.png)
-
-<img src="https://ik.imagekit.io/ikmedia/women-dress-2.jpg" 
-     width="400" 
-     height="500" />
+![*Microcebus rufus violin graph*](../Mouse_Lemur_Replication/Microcebus_rufus_violin_graph.png){width=500px}
 
 ```{r}
 # This second graph is a series of three
@@ -192,6 +188,21 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 
 # Just like the first graph, a caption is to be added later using word (as done in the original study)
 ```
+
+# Here is the original figure 
+
+![*Microcebus jollyae* violin graph](../Mouse_Lemur_Replication/Triple_violin_graph.png){width=500px}
+
+
+![*Microcebus jollyae* survival graph for the shaded plot experiment ](../Mouse_Lemur_Replication/Survival_jollyae_closed_graph.png){width=500px}
+
+![*Microcebus jollyae* survival graph for the semi-shaded plot experiment ](../Mouse_Lemur_Replication/Survival_jollyae_semi_graph.png){width=500px}
+
+![*Microcebus jollyae* survival graph for the petri dish experiment ](../Mouse_Lemur_Replication/Survival_jollyae_petri_graph.png){width=500px}
+
+![*Microcebus rufus* survival graph for the petri dish experiment ](../Mouse_Lemur_Replication/Survival_rufus_petri_graph.png){width=500px}
+
+![*Microcebus rufus* survival graph for the forest ground experiment ](../Mouse_Lemur_Replication/Survival_rufus_ground_graph.png){width=500px}
 
 
 <br>
