@@ -632,14 +632,18 @@ ggarrange(plot1, plot2, plot3, ncol = 3, nrow = 1)
 #
 #########################################################################
 
+#
+#
+#
 # This is the survival analysis for seeds dispersed by microcebus rufus in the petri dish experiment 
-rufus_petri_yes
+#
+#
+#
 ##### Creating a status colum to indicate that all of the seeds germinated at some point
 rufus_petri_yes$status <- rep(1, times = 121, length.out = NA, each = 1)
 
 #### Next we use the survival function to make a survival curve 
 rufus_petri_yes_km_fit <- survfit(Surv(germ_time, status) ~ treatment, data = rufus_petri_yes)
-rufus_petri_yes_km_fit
 # This give a nice summary of the analysis
 summary(rufus_petri_yes_km_fit, times = c(1,15,30,45,60,75,90))
 
@@ -666,6 +670,10 @@ rufus_petri_yes_km_plot + labs(title = "Microcebus rufus",subtitle = "Petri dish
 # Those are all things which I need to create the table in the paper
 rufus_petri_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=rufus_petri_yes)
 summary(rufus_petri_yes_cox)
+
+# X^2 = 41.38
+# df = 1
+# p = 1e-10
 
 #
 #
