@@ -38,6 +38,8 @@ Loading the data into R the first step of the analysis. This was more complicate
 data <- read.csv("mouse_lemur_data.csv", header = TRUE)
 data$species_number <- as.numeric(as.factor(data$scientificName))
 data$seedling_mm <- as.numeric(data$seedling_length_mm)
+data$germ_time <- as.numeric(data$germination_time)
+data$ratio <- as.numeric( factor(data$germination_state) ) - 1
 ```
 
 Subsetting the data into something workable based on the experiment and then only the seeds which germinated. This is where we can begin to see that the data set I have is not the data set which is presented in the paper. The number of observations is incorrect in many cases. 
