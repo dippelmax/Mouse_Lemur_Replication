@@ -328,110 +328,107 @@ X^2 = 0.02
 df = 1
 p = 0.9 
 
+<br>
 
-
-# This is the survival analysis for seeds dispersed by microcebus jollyae in the semi-shaded plot experiment 
-jollyae_semi_yes
-nrow(jollyae_semi_yes)
-##### Creating a status colum to indicate that all of the seeds germinated at some point
+This is the survival analysis for seeds dispersed by microcebus jollyae in the semi-shaded plot experiment 
+ 
+```{r}
+# Creating a status colum to indicate that all of the seeds germinated at some point
 jollyae_semi_yes$status <- rep(1, times = 233, length.out = NA, each = 1)
-
-#### Next we use the survival function to make a survival curve 
+# Next we use the survival function to make a survival curve 
 jollyae_semi_yes_km_fit <- survfit(Surv(germ_time, status) ~ treatment, data = jollyae_semi_yes)
-jollyae_semi_yes_km_fit
 # This give a nice summary of the analysis
 summary(jollyae_semi_yes_km_fit, times = c(1,15,30,45,60,75,90))
+```
 
+```{r}
 # Next we plot the survival fit and make it look like the graph in the paper
 jollyae_semi_yes_km_plot <- autoplot(jollyae_semi_yes_km_fit) 
-jollyae_semi_yes_km_plot
-
-
 jollyae_semi_yes_km_plot + labs(title = "Microcebus jollyae",subtitle = "Semi-shaded experiment", 
                                  y = "Probability of germinating", x = "Time (days)") +
   theme(plot.title = element_text(face = "italic")) +
   scale_color_manual(values=c("darkgreen", "darkorange3")) +
   scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
   geom_text(x=75, y=.2, label="p = 0.2") + theme(legend.position="bottom")
+```
 
-# One problem though is that this graph is upside down. I used scale_y_reverse() to reverse the scale,
-# but now the numbers are wrong and the annotated p value is gone. 
+One problem though is that this graph is upside down. I used scale_y_reverse() to reverse the scale, but now the numbers are wrong and the annotated p value is gone. 
+
+```{r}
 jollyae_semi_yes_km_plot + labs(title = "Microcebus jollyae",subtitle = "Semi-shaded experiment", 
                                  y = "Probability of germinating", x = "Time (days)") +
   theme(plot.title = element_text(face = "italic")) +
   scale_color_manual(values=c("darkgreen", "darkorange3")) +
   scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
   geom_text(x=75, y=.75, label="p = 0.2") + theme(legend.position="bottom") + scale_y_reverse()
+```
 
-# This the the Cox test with fragility
-# The summary includes the Chi square value, the degrees of freedom and the p-value
-# Those are all things which I need to create the table in the paper
+Here is the original graph
+
+![*Microcebus jollyae* survival graph for the semi-shaded plot experiment ](../Mouse_Lemur_Replication/Survival_jollyae_semi_graph.png){width=500px} 
+
+This the the Cox test with fragility. The summary includes the Chi square value, the degrees of freedom and the p-value.
+
+```{r}
 jollyae_semi_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=jollyae_semi_yes)
 summary(jollyae_semi_yes_cox)
-# X^2 = 1.4
-# df = 1
-# p = 0.2
+```
 
-#
-#
-#
-############################## jollyae closed yes survival analysis #######################################
-#
-#
-#
+X^2 = 1.4
+df = 1
+p = 0.2
 
-# This is the survival analysis for seeds dispersed by microcebus jollyae in the Shaded plot experiment 
-jollyae_closed_yes
-nrow(jollyae_closed_yes)
-##### Creating a status colum to indicate that all of the seeds germinated at some point
+<br>
+
+This is the survival analysis for seeds dispersed by microcebus jollyae in the Shaded plot experiment 
+
+```{r}
+#Creating a status colum to indicate that all of the seeds germinated at some point
 jollyae_closed_yes$status <- rep(1, times = 61, length.out = NA, each = 1)
 
-#### Next we use the survival function to make a survival curve 
+# Next we use the survival function to make a survival curve 
 jollyae_closed_yes_km_fit <- survfit(Surv(germ_time, status) ~ treatment, data = jollyae_closed_yes)
-jollyae_closed_yes_km_fit
 # This give a nice summary of the analysis
 summary(jollyae_closed_yes_km_fit, times = c(1,15,30,45,60,75,90))
+```
 
-# Next we plot the survival fit and make it look like the graph in the paper
+Next we plot the survival fit and make it look like the graph in the paper
+```{r}
 jollyae_closed_yes_km_plot <- autoplot(jollyae_closed_yes_km_fit) 
-jollyae_closed_yes_km_plot
-
-
 jollyae_closed_yes_km_plot + labs(title = "Microcebus jollyae",subtitle = "Shaded experiment", 
                                 y = "Probability of germinating", x = "Time (days)") +
   theme(plot.title = element_text(face = "italic")) +
   scale_color_manual(values=c("darkgreen", "darkorange3")) +
   scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
   geom_text(x=75, y=.2, label="p = .7") + theme(legend.position="bottom")
+```
 
-# One problem though is that this graph is upside down. I used scale_y_reverse() to reverse the scale,
-# but now the numbers are wrong and the annotated p value is gone. 
+
+One problem though is that this graph is upside down. I used scale_y_reverse() to reverse the scale, but now the numbers are wrong and the annotated p value is gone. 
+
+```{r}
 jollyae_closed_yes_km_plot + labs(title = "Microcebus jollyae",subtitle = "closed-shaded experiment", 
                                 y = "Probability of germinating", x = "Time (days)") +
   theme(plot.title = element_text(face = "italic")) +
   scale_color_manual(values=c("darkgreen", "darkorange3")) +
   scale_fill_manual(values=c("darkgreen", "darkorange3")) + 
   geom_text(x=75, y=.75, label="p = .7") + theme(legend.position="bottom") + scale_y_reverse()
+```
 
-# This the the Cox test with fragility
-# The summary includes the Chi square value, the degrees of freedom and the p-value
-# Those are all things which I need to create the table in the paper
-jollyae_closed_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=jollyae_closed_yes)
-summary(jollyae_closed_yes_cox)
-# X^2 = 0.17
-# df = 1
-# p = .7
-
-## Survival Analysis graphs
+This is the original graph
 
 ![*Microcebus jollyae* survival graph for the shaded plot experiment ](../Mouse_Lemur_Replication/Survival_jollyae_closed_graph.png){width=500px}
 
-![*Microcebus jollyae* survival graph for the semi-shaded plot experiment ](../Mouse_Lemur_Replication/Survival_jollyae_semi_graph.png){width=500px}
+This the the Cox test with fragility. The summary includes the Chi square value, the degrees of freedom and the p-value.
 
+```{r}
+jollyae_closed_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=jollyae_closed_yes)
+summary(jollyae_closed_yes_cox)
+```
 
-
-
-
+X^2 = 0.17
+df = 1
+p = .7
 
 
 <br>
