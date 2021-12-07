@@ -743,7 +743,6 @@ jollyae_petri_yes_km_plot
 
 # Error: Aesthetics can not vary with a ribbon
 
-
 jollyae_petri_yes_km_plot + labs(title = "Microcebus jollyae",subtitle = "Petri dish experiment", 
                                y = "Probability of germinating", x = "Time (days)") +
   theme(plot.title = element_text(face = "italic")) +
