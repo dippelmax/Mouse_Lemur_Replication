@@ -22,6 +22,7 @@ data <- read.csv("mouse_lemur_data.csv", header = TRUE)
 data$species_number <- as.numeric(as.factor(data$scientificName))
 data$seedling_mm <- as.numeric(data$seedling_length_mm)
 data$germ_time <- as.numeric(data$germination_time)
+data$ratio <- as.numeric( factor(data$germination_state) ) - 1
 
 
 ########################################################################
@@ -355,10 +356,10 @@ summary(lme_jollyae_petri_yes_summary_modified1_germ_time)
 lme_jollyae_semi_yes_summary_modified1_germ_time <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
 summary(lme_jollyae_semi_yes_summary_modified1_germ_time)
 
-null4 <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
-summary(null4)
+null5 <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null5)
 
-anova(null4, lme_jollyae_semi_yes_summary_modified1_germ_time, test = "Chisq")
+anova(null5, lme_jollyae_semi_yes_summary_modified1_germ_time, test = "Chisq")
 r.squaredGLMM(lme_jollyae_semi_yes_summary_modified1_germ_time)
 
 
@@ -371,10 +372,10 @@ r.squaredGLMM(lme_jollyae_semi_yes_summary_modified1_germ_time)
 lme_jollyae_closed_yes_summary_modified1_germ_time <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
 summary(lme_jollyae_closed_yes_summary_modified1_germ_time)
 
-null4 <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
-summary(null4)
+null6 <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null6)
 
-anova(null4, lme_jollyae_closed_yes_summary_modified1_germ_time, test = "Chisq")
+anova(null6, lme_jollyae_closed_yes_summary_modified1_germ_time, test = "Chisq")
 r.squaredGLMM(lme_jollyae_closed_yes_summary_modified1_germ_time)
 
 
@@ -394,6 +395,136 @@ r.squaredGLMM(lme_jollyae_closed_yes_summary_modified1_germ_time)
 #
 #
 #
+
+# First I will run the model for seeds dispersed by Microcebus rufus in the petri dish experiment
+# This code calculates the ratios of germinated seeds for all the indivdual species
+
+rufus_petri_ratio_summary <- rufus_petri %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+            N = n())
+rufus_petri_ratio_summary_modified <- rufus_petri_ratio_summary[-c(3, 4, 5, 6, 7, 8, 9, 10, 15), ]
+
+# Now for the model
+
+lme_rufus_petri_ratio_summary_modified <- lmer(data = rufus_petri_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_petri_ratio_summary_modified)
+
+null7 <- lmer(data = rufus_petri_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null7)
+
+anova(null7, lme_rufus_petri_ratio_summary_modified, test = "Chisq")
+r.squaredGLMM(lme_rufus_petri_ratio_summary_modified)
+
+# β = 0.2451
+# z = 2.1965
+# p = 0.1383
+# R2M = 0.2085819
+# R2C = 0.5011694
+
+# First I will run the model for seeds dispersed by Microcebus rufus in the forest ground experiment
+# This code calculates the ratios of germinated seeds for all the indivdual species
+
+rufus_ground_ratio_summary <- rufus_ground %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+rufus_ground_ratio_summary_modified <- rufus_ground_ratio_summary[-c(1, 2, 3, 8), ]
+
+# Now for the model
+
+lme_rufus_ground_ratio_summary_modified <- lmer(data = rufus_ground_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_ground_ratio_summary_modified)
+
+null8 <- lmer(data = rufus_ground_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null8)
+
+anova(null8, lme_rufus_ground_ratio_summary_modified, test = "Chisq")
+r.squaredGLMM(lme_rufus_ground_ratio_summary_modified)
+
+# β = 3.182e-01
+# z = 1.6219
+# p = 0.2028
+# R2M = 0.4
+# R2C = 0.4000418
+
+# First I will run the model for seeds dispersed by Microcebus jollyae in the petri dish experiment
+# This code calculates the ratios of germinated seeds for all the indivdual species
+
+jollyae_petri_ratio_summary <- jollyae_petri %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+jollyae_petri_ratio_summary_modified <- jollyae_petri_ratio_summary
+
+# Now for the model
+
+lme_jollyae_petri_ratio_summary_modified <- lmer(data = jollyae_petri_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_petri_ratio_summary_modified)
+
+null9 <- lmer(data = jollyae_petri_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null9)
+
+anova(null9, lme_jollyae_petri_ratio_summary_modified, test = "Chisq")
+r.squaredGLMM(lme_jollyae_petri_ratio_summary_modified)
+
+# β = 0.26584
+# z = 4.0348
+# p = 0.04457
+# R2M = 0.42721
+# R2C = 0.4633437
+
+# First I will run the model for seeds dispersed by Microcebus jollyae in the semi-shaded experiment
+# This code calculates the ratios of germinated seeds for all the indivdual species
+
+jollyae_semi_ratio_summary <- jollyae_semi %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+jollyae_semi_ratio_summary_modified <- jollyae_semi_ratio_summary
+
+# Now for the model
+
+lme_jollyae_semi_ratio_summary_modified <- lmer(data = jollyae_semi_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_semi_ratio_summary_modified)
+
+null10 <- lmer(data = jollyae_semi_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null10)
+
+anova(null10, lme_jollyae_semi_ratio_summary_modified, test = "Chisq")
+r.squaredGLMM(lme_jollyae_semi_ratio_summary_modified)
+
+# β = 0.18646
+# z = 4.486
+# p = 0.03417
+# R2M = 0.1364723
+# R2C = 0.8845932
+
+# First I will run the model for seeds dispersed by Microcebus jollyae in the shaded experiment
+# This code calculates the ratios of germinated seeds for all the indivdual species
+
+jollyae_closed_ratio_summary <- jollyae_closed %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+jollyae_closed_ratio_summary_modified <- jollyae_closed_ratio_summary[-c(5), ]
+
+# Now for the model
+
+lme_jollyae_closed_ratio_summary_modified <- lmer(data = jollyae_closed_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_closed_ratio_summary_modified)
+
+null11 <- lmer(data = jollyae_closed_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null11)
+
+anova(null11, lme_jollyae_closed_ratio_summary_modified, test = "Chisq")
+r.squaredGLMM(lme_jollyae_closed_ratio_summary_modified)
+
+# β = -0.008769 
+# z = 0.0076
+# p = 0.9305
+# R2M = 0.00100877
+# R2C = 0.07302369
 
 ########################################################################
 #
