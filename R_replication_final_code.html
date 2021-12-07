@@ -399,7 +399,6 @@ rufus_petri_yes_summary &lt;- rufus_petri_yes %&gt;%
 <pre><code>## `summarise()` has grouped output by 'scientificName'. You can override using the `.groups` argument.</code></pre>
 <pre class="r"><code>####  This line modifies the summary statistics to include only the species for which there is a defecated and control. This step was not explicitly stated anywhere in the paper and it took me a very long time to figure it out.   
 rufus_petri_yes_summary_modified &lt;- rufus_petri_yes_summary[-c(3, 4, 5, 6, 7, 12), ]
-rufus_petri_yes_summary_modified
 sum(rufus_petri_yes_summary_modified$N)
 # 88</code></pre>
 <p><br></p>
@@ -421,13 +420,106 @@ nrow(rufus_ground_yes)</code></pre>
 <p>The researchers seemed to have used the final summary (n=7) for the number of observations actually analyzed (n=7). Concerningly, I have no idea where the number 75 as the total number of observations comes from.</p>
 <p><br></p>
 <p>Now, I will subset the data for seeds dispersed by <em>Microcebus jollyae</em></p>
-<pre class="r"><code>jollyae &lt;- subset(data, disperser == &quot;microcebus_jollyae&quot;)
+<pre class="r"><code># Subsetting the data to only include seeds dispersed by microcebus jollyae
+jollyae &lt;- subset(data, disperser == &quot;microcebus_jollyae&quot;)
+# Subsetting the jollyae data to only include seeds in the petri dish experiment
 jollyae_petri &lt;- subset(jollyae, experiment == &quot;Petri dish&quot;)
-jollyae_closed &lt;- subset(jollyae, experiment == &quot;Closed&quot;)
-jollyae_semi &lt;- subset(jollyae, experiment == &quot;Semi-closed&quot;)
+nrow(jollyae_petri)</code></pre>
+<pre><code>## [1] 528</code></pre>
+<pre class="r"><code># The number of total observations in the experiment is 528
+# Now, I am subsettung the data to only have seeds which germinated 
 jollyae_petri_yes &lt;- subset(jollyae_petri, germination_state == &quot;yes&quot;)
+nrow(jollyae_petri_yes)</code></pre>
+<pre><code>## [1] 70</code></pre>
+<pre class="r"><code># The number of germinated seeds is 70</code></pre>
+<pre class="r"><code># This creates summary statistics for seedling growth for each species
+jollyae_petri_yes_summary &lt;- jollyae_petri_yes %&gt;% 
+  group_by(scientificName, treatment) %&gt;%
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
+            N = n())</code></pre>
+<pre><code>## `summarise()` has grouped output by 'scientificName'. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
+jollyae_petri_yes_summary_modified &lt;- jollyae_petri_yes_summary[-c(1, 2, 3), ]
+jollyae_petri_yes_summary_modified</code></pre>
+<pre><code>## # A tibble: 2 × 5
+## # Groups:   scientificName [1]
+##   scientificName treatment seedling_mean germ_time     N
+##   &lt;chr&gt;          &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
+## 1 voampoalahy    control            0         30       4
+## 2 voampoalahy    defecated          5.95      28.4    21</code></pre>
+<pre class="r"><code>sum(jollyae_petri_yes_summary_modified$N)</code></pre>
+<pre><code>## [1] 25</code></pre>
+<pre class="r"><code># 25</code></pre>
+<p>The number of total observations in the experiment is 528. The number of observations germinated is 70. The number of observations after only including species with defecated and control seeds is 25. However, the paper states 528 is total sample size and 70 observations are actually analyzed.</p>
+<p>In this case, the researchers seemed to have used all of the observations germinated (n=70) for the number of observations actually analyzed (n=70)</p>
+<pre class="r"><code># Subsetting the jollyae data to only include seeds in the shaded plot experiment
+jollyae_closed &lt;- subset(jollyae, experiment == &quot;Closed&quot;)
+nrow(jollyae_closed)</code></pre>
+<pre><code>## [1] 694</code></pre>
+<pre class="r"><code># 694
 jollyae_closed_yes &lt;- subset(jollyae_closed, germination_state == &quot;yes&quot;)
-jollyae_semi_yes &lt;- subset(jollyae_semi, germination_state == &quot;yes&quot;)</code></pre>
+nrow(jollyae_closed_yes)</code></pre>
+<pre><code>## [1] 61</code></pre>
+<pre class="r"><code># 61</code></pre>
+<pre class="r"><code># This creates summary statistics for seedling growth for each species
+jollyae_closed_yes_summary &lt;- jollyae_closed_yes %&gt;% 
+  group_by(scientificName, treatment) %&gt;%
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
+            N = n())</code></pre>
+<pre><code>## `summarise()` has grouped output by 'scientificName'. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code># This line modifies the summary statistics to include only the species for which there is a defecated and control  
+jollyae_closed_yes_summary_modified &lt;- jollyae_closed_yes_summary[-c(5, 6), ]
+jollyae_closed_yes_summary_modified</code></pre>
+<pre><code>## # A tibble: 4 × 5
+## # Groups:   scientificName [2]
+##   scientificName  treatment seedling_mean germ_time     N
+##   &lt;chr&gt;           &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
+## 1 clidemia_hirta  control             0        38.3    21
+## 2 clidemia_hirta  defecated           4.6      25.7    10
+## 3 dypsis_linearis control             0        22       3
+## 4 dypsis_linearis defecated          10        36       9</code></pre>
+<pre class="r"><code>sum(jollyae_closed_yes_summary_modified$N)</code></pre>
+<pre><code>## [1] 43</code></pre>
+<pre class="r"><code>#43</code></pre>
+<p>The number of total observations in the experiment is 694. The number of observations germinated is 61. The number of observations after only including species with defecated and control seeds is 43. However, the paper states 377 is total sample size and 47 observations are actually analyzed.</p>
+<p>In this case, the researchers seemed to have added the 4 seeds from <em>voampoalahy</em> from the final summary (n=43) to make the number of observations analyzed (n=47)</p>
+<p>Concerningly, I do not know where the number 377 as the total observations in the experiment comes from</p>
+<pre class="r"><code># Subsetting the jollyae data to only include seeds in the semi-shaded plot experiment
+jollyae_semi &lt;- subset(jollyae, experiment == &quot;Semi-closed&quot;)
+nrow(jollyae_semi)</code></pre>
+<pre><code>## [1] 660</code></pre>
+<pre class="r"><code># 660
+jollyae_semi_yes &lt;- subset(jollyae_semi, germination_state == &quot;yes&quot;)
+nrow(jollyae_semi_yes)</code></pre>
+<pre><code>## [1] 233</code></pre>
+<pre class="r"><code># 233</code></pre>
+<pre class="r"><code># This creates summary statistics for seedling growth for each species
+jollyae_semi_yes_summary &lt;- jollyae_semi_yes %&gt;% 
+  group_by(scientificName, treatment) %&gt;%
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
+            N = n())</code></pre>
+<pre><code>## `summarise()` has grouped output by 'scientificName'. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
+jollyae_semi_yes_summary_modified &lt;- jollyae_semi_yes_summary
+jollyae_semi_yes_summary_modified</code></pre>
+<pre><code>## # A tibble: 8 × 5
+## # Groups:   scientificName [4]
+##   scientificName    treatment seedling_mean germ_time     N
+##   &lt;chr&gt;             &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
+## 1 clidemia_hirta    control           10         29.7    10
+## 2 clidemia_hirta    defecated         13.0       44.5   125
+## 3 dypsis_linearis   control           10         53.1    16
+## 4 dypsis_linearis   defecated          7.35      35.5    17
+## 5 ficus_trichoclada control            1         73       3
+## 6 ficus_trichoclada defecated          0         52.9    18
+## 7 voampoalahy       control            1         57       5
+## 8 voampoalahy       defecated          8.72      59.2    39</code></pre>
+<pre class="r"><code>sum(jollyae_semi_yes_summary_modified$N)</code></pre>
+<pre><code>## [1] 233</code></pre>
+<pre class="r"><code>#233</code></pre>
+<p>The number of total observations in the experiment is 660. The number of observations germinated is 233. The number of observations after only including species with defecated and control seeds is 233. However, the paper states 660 is total sample size and 233 observations are actually analyzed.</p>
+<p>The researchers seemed to have used the final summary (n=233) for the number of observations actually analyzed (n=233). There were no single experiment species so there are no differences between the number germinated and the final summary.</p>
+<p><br><br><br></p>
 </div>
 <div id="violin-graphs" class="section level2">
 <h2>Violin graphs</h2>
