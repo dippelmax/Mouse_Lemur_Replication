@@ -222,10 +222,7 @@ lme_rufus_petri_yes_summary_modified1 <- lmer(data = rufus_petri_yes_summary_mod
 summary(lme_rufus_petri_yes_summary_modified1)
 
 # β = 13.549
-# z = 
-# p < 
-# R2M = 
-# R2C = 
+
 
 # REML = FALSE , slope model
 lme_rufus_petri_yes_summary_modified2 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 + treatment | scientificName), REML = FALSE)
@@ -870,6 +867,158 @@ summary(jollyae_closed_yes_cox)
 
 
 # https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ 
+
+
+########################################################################
+#
+#
+#
+#
+#
+#
+##################### tables #######################
+#
+#
+#
+#
+#
+#
+#########################################################################
+
+
+# I am starting with the mixed effect model comparing seedling length across the 
+# fixed effect of treatment and the random effect of species
+
+library(dplyr)
+library(scales)
+library(gt)
+
+
+r_p_rep_l <- c("β = 13.549", "z = 3.18796", "p = 0.0742", "R2M = 0.2205152", "R2C = 0.6833415")
+r_p_og_l <- c("β = 15.54", "z=2.45", "p<.1", "R2M = 0.21", "R2C = 0.76")
+
+r_f_rep_l <- c("β = NA", "z = NA", "p = NA", "R2M = NA", "R2C = NA")
+r_f_og_l <- c("β < 0.001", "z=1.00", "p = .48", "R2M = 0.25", "R2C = 0.25")
+
+j_p_rep_l <- c("β = NA", "z = NA", "p = NA", "R2M = NA", "R2C = NA")
+j_p_og_l <- c("β < 0.001", "z < 0.001", "p < .1", "R2M = 0.46", "R2C = 0.46")
+
+j_s_rep_l <- c("β = 1.774", "z = 0.7167", "p = 0.3972", "R2M = 0.04079902", "R2C = 0.636132")
+j_s_og_l <- c("β=1.08", "z=0.37", "p=.73", "R2M = 0.008", "R2C = 0.53")
+
+j_c_rep_l <- c("β = 7.300", "z = 6.1518", "p = 0.01313", "R2M = 0.8297392", "R2C = 0.8297654")
+j_c_og_l <- c("β < 0.001", "z=1.48", "p = .22", "R2M = 0.24", "R2C = 0.24")
+
+t1_l <- cbind(r_p_rep_l, r_p_og_l, r_f_rep_l, r_f_og_l, j_p_rep_l,
+              j_p_og_l, j_s_rep_l, j_s_og_l, j_c_rep_l, j_c_og_l)
+t2_l <- as.data.frame(t1_l)
+t3_l <- t2_l %>% gt() %>%
+  cols_label(r_p_rep_l = "Petri dish experiment replication values",
+             r_p_og_l = "Petri dish experiment original values", 
+             r_f_rep_l = "Forest ground experiment replication values",
+             r_f_og_l = "Forest ground experiment original values",
+             j_p_rep_l = "Petri dish experiment replication values",
+             j_p_og_l = "Petri dish experiment original values",
+             j_s_rep_l = "Semi-shaded plot experiment replication values",
+             j_s_og_l = "Semi-shaded plot experiment original values",
+             j_c_rep_l = "Shaded plot experiment replication values",
+             j_c_og_l = "Shaded plot experiment original values") %>% 
+  tab_header(title = md("Summary table of the linear mixed-effects models of mean seedling length")) %>%
+  tab_spanner(label = "*Microcebus rufus*", columns = c(r_p_rep_l, r_p_og_l, r_f_rep_l, r_f_og_l)) %>%
+  tab_spanner(label = "*Microcebus jollyae*", columns = c(j_p_rep_l, j_p_og_l, j_s_rep_l, j_s_og_l, j_c_rep_l, j_c_og_l))
+t3_l
+
+r_p_rep_t <- c("β = -15.97", "z = 0.9894", "p = 0.3199", "R2M = 0.1307745", "R2C = 0.1307745")
+r_p_og_t <- c("β = −11.28", "z = −0.68", "p = .52", "R2M = 0.06", "R2C = 0.06")
+
+r_f_rep_t <- c("β = NA", "z = NA", "p = NA", "R2M = NA", "R2C = NA")
+r_f_og_t <- c("β < 0.001", "z=1.00", "p = .47", "R2M = 0.24", "R2C = 0.25")
+
+j_p_rep_t <- c("β = NA", "z = NA", "p = NA", "R2M = NA", "R2C = NA")
+j_p_og_t <- c("β = 24.79", "z=2.59", "p < .05", "R2M = 0.49", "R2C = 0.49")
+
+j_s_rep_t <- c("β = -5.183", "z = 0.4874","p = 0.4851", "R2M = 0.04586151", "R2C = 0.3807093")
+j_s_og_t <- c("β = 15.16", "z=1.12", "p = .34", "R2M = 0.15", "R2C = 0.16")
+
+j_c_rep_t <- c("β = 0.6833", "z = 0.01", "p = 0.923", "R2M = 0.00332", "R2C = 0.003328367")
+j_c_og_t <- c("β = −18.78", "z = −1.16", "p = .29", "R2M = 0.16", "R2C = 0.16")
+
+t1_t <- cbind(r_p_rep_t, r_p_og_t, r_f_rep_t, r_f_og_t, j_p_rep_t,
+              j_p_og_t, j_s_rep_t, j_s_og_t, j_c_rep_t, j_c_og_t)
+t2_t <- as.data.frame(t1_t)
+t3_t <- t2_t %>% gt() %>%
+  cols_label(r_p_rep_t = "Petri dish experiment replication values",
+             r_p_og_t = "Petri dish experiment original values", 
+             r_f_rep_t = "Forest ground experiment replication values",
+             r_f_og_t = "Forest ground experiment original values",
+             j_p_rep_t = "Petri dish experiment replication values",
+             j_p_og_t = "Petri dish experiment original values",
+             j_s_rep_t = "Semi-shaded plot experiment replication values",
+             j_s_og_t = "Semi-shaded plot experiment original values",
+             j_c_rep_t = "Shaded plot experiment replication values",
+             j_c_og_t = "Shaded plot experiment original values") %>% 
+  tab_header(title = md("Summary table of the linear mixed-effects models of mean germination time")) %>%
+  tab_spanner(label = "*Microcebus rufus*", columns = c(r_p_rep_t, r_p_og_t, r_f_rep_t, r_f_og_t)) %>%
+  tab_spanner(label = "*Microcebus jollyae*", columns = c(j_p_rep_t, j_p_og_t, j_s_rep_t, j_s_og_t, j_c_rep_t, j_c_og_t))
+t3_t
+
+r_p_rep_r <- c("β = 0.2451", "z = 2.1965", "p = 0.1383", "R2M = 0.2085819", "R2C = 0.5011694")
+r_p_og_r <- c("β = 1.09", "z= 2.60", "p<.01", "R2M = 0.05", "R2C = 0.27")
+
+r_f_rep_r <- c("β = 3.182e-01", "z = 1.6219", "p = 0.2028", "R2M = 0.4", "R2C = 0.4000418")
+r_f_og_r <- c("β = 23.29", "z=0.001", "p = .99", "R2M = 0.93", "R2C = 0.95")
+
+j_p_rep_r <- c("β = 0.26584", "z = 4.0348", "p = 0.04457", "R2M = 0.42721", "R2C = 0.4633437")
+j_p_og_r <- c("β = 2.37", "z=4.26", "p < .001", "R2M = 0.18", "R2C = 0.33")
+
+j_s_rep_r <- c( "β = 0.18646", "z = 4.486", "p = 0.03417", "R2M = 0.1364723", "R2C = 0.8845932")
+j_s_og_r <- c("β = 0.95", "z=3.57", "p<.001", "R2M = 0.04", "R2C = 0.28")
+
+j_c_rep_r <- c("β = -0.008769", "z = 0.0076", "p = 0.9305", "R2M = 0.00100877", "R2C = 0.07302369")
+j_c_og_r <- c("β = −0.89", "z=−2.73", "p < .01", "R2M = 0.02", "R2C = 0.18")
+
+
+
+
+# Survival analysis table
+
+
+# Microcebus rufus petri dish experiment 
+r_p_rep_sur <- c("X^2 = 41.38", "df = 1", "p = 1e-10")
+r_p_og_sur <- c("X^2 = 20.62", "df = 1", "p < .0001")
+# Microcebus rufus forest ground experiment
+r_f_rep_sur <- c("X^2 = NA", "df = NA", "p = NA")
+r_f_og_sur <- c("X^2 = NA", "df = NA", "p = NA")
+# Microcebus jollyae petri dish experiment
+j_p_rep_sur <- c("X^2 = 0.02", "df = 1","p = 0.9")
+j_p_og_sur <- c("X^2 = 66.08", "df = 1", "p = .96")
+# Microcebus jollyae semi-shaded plot experiment 
+j_s_rep_sur <- c("X^2 = 1.4", "df = 1", "p = 0.2")
+j_s_og_sur <- c("X^2 = 1.60", "df = 1", "p = .20")
+# Microcebus jollyae Shaded plot experiment 
+j_c_rep_sur <- c("X^2 = 0.17", "df = 1", "p = .7")
+j_c_og_sur <- c("X2 = 0.30", "df = 1", "p = .56")
+
+t1_sur <- cbind(r_p_rep_sur, r_p_og_sur, r_f_rep_sur, r_f_og_sur, j_p_rep_sur, j_p_og_sur,
+                j_s_rep_sur, j_s_og_sur, j_c_rep_sur, j_c_og_sur)
+t2_sur <- as.data.frame(t1_sur)
+t3_sur <- t2_sur %>% gt() %>%
+  cols_label(r_p_rep_sur = "Petri dish experiment replication values",
+             r_p_og_sur = "Petri dish experiment original values", 
+             r_f_rep_sur = "Forest ground experiment replication values",
+             r_f_og_sur = "Forest ground experiment original values",
+             j_p_rep_sur = "Petri dish experiment replication values",
+             j_p_og_sur = "Petri dish experiment original values",
+             j_s_rep_sur = "Semi-shaded plot experiment replication values",
+             j_s_og_sur = "Semi-shaded plot experiment original values",
+             j_c_rep_sur = "Shaded plot experiment replication values",
+             j_c_og_sur = "Shaded plot experiment original values") %>% 
+  tab_header(title = md("Summary table of the Cox model with frailty")) %>%
+  tab_spanner(label = "Microcebus rufus", columns = c(r_p_rep_sur, r_p_og_sur, r_f_rep_sur, r_f_og_sur)) %>%
+  tab_spanner(label = "Microcebus Jollyae", columns = c(j_p_rep_sur, j_p_og_sur,
+                                            j_s_rep_sur, j_s_og_sur, j_c_rep_sur, j_c_og_sur))
+t3_sur
+
 
 
 ################################# The End ########################################
