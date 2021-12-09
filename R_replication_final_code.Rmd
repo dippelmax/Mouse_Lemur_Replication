@@ -2,7 +2,11 @@
 title: "R Replication Assignment"
 author: "Max Dippel"
 date: "11/16/2021"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
+
 ---
 
 ## Description of Assignment
@@ -909,6 +913,7 @@ This the the Cox test with fragility. The summary includes the Chi square value,
 ```{r}
 jollyae_closed_yes_cox <- coxph(Surv(germ_time, status) ~ treatment, data=jollyae_closed_yes)
 summary(jollyae_closed_yes_cox)
+
 ```
 
 X^2 = 0.17
