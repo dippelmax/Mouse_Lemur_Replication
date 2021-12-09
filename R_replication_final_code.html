@@ -1517,7 +1517,8 @@ library(Hmisc)
 library(ggpubr)
 library(MuMIn)
 library(tidyverse)
-library(survival)</code></pre>
+library(survival)
+library(gt)</code></pre>
 <p>Loading the data into R the first step of the analysis. This was more complicated than I intially realized because every numerical variable was actually loaded in as a factor When attempted to graph the results or run models, the results would have an error or not look as it should have. I used as.numeric to create new numeric varaibles in the data set which the R could read easily.</p>
 <pre class="r"><code>data &lt;- read.csv(&quot;mouse_lemur_data.csv&quot;, header = TRUE)
 data$species_number &lt;- as.numeric(as.factor(data$scientificName))
