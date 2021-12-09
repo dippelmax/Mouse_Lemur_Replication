@@ -52,9 +52,9 @@ Subsetting the data into something workable based on the experiment and then onl
 First I will subset the data for seeds dispersed by *Microcebus rufus*
 
 ```{r}
-# Subsetting the data to only include seeds dispersed by microcebus rufus
+# Subsetting the data to only include seeds dispersed by Microcebus rufus
 rufus <- subset(data, disperser == "microcebus_rufus")
-# Subsetting the data to only include seeds dispersed by microcebus rufus in the petri dish experiment
+# Subsetting the data to only include seeds dispersed by Microcebus rufus in the petri dish experiment
 rufus_petri <- subset(rufus, experiment == "Petri dish")
 nrow(rufus_petri)
 # The number of total observations in the experiment is 685
@@ -260,7 +260,7 @@ Here is the original figure
 
 ![*Microcebus rufus violin graph*](../Mouse_Lemur_Replication/Microcebus_rufus_violin_graph.png){width=500px}
 
-There are few differences between the replicated graph and the original graph. 
+There are not many differences between the replicated graph and the original graph. 
 
 Next I will graph the seedling length for each experiment done with seeds dispersed by *Microcebus jollyae*. This second graph is a series of three violin graphs together. It is complete with axis labels, a title and subtitles. I had to go through a lot of work to hide the y axis on two of them so that they would all fit together without excess information. 
 
@@ -398,6 +398,8 @@ Now I will run the rufus dispered forest ground experiment
 
 It is impossible to do analysis with no more than one treatment 
 
+It is possible that the researchers ran the null model for this experiment
+
 Now I will do the analysis for the the experiment from jollyae dispersed seeds in the petri dish
 
 ```{r}
@@ -406,6 +408,8 @@ Now I will do the analysis for the the experiment from jollyae dispersed seeds i
 ```
 
 seedling length = 0, cannot compare between treatments
+
+It is possible that the researchers ran the null model for this experiment
 
 Now I will do the analysis for the the experiment from jollyae dispersed seeds in the semi-shaded plot experiment
 
@@ -468,7 +472,7 @@ These are the statistics needed for the table
 
 ### Mean seedling length table
 
-Now, I will construct a table with the replication values alongsid the original values
+Now, I will construct a table with the replication values alongside the original values
 
 
 Legend for table construction object:
@@ -991,7 +995,9 @@ rufus_petri_yes_km_plot + labs(title = "Microcebus rufus",subtitle = "Petri dish
   geom_text(x=75, y=.75, label="p < 0.0001") + theme(legend.position="bottom") + scale_y_reverse()
 ```
 
-Here is the original graph 
+I am unable to flip the axises or re-add the p-value to the graph
+
+Here is the original graph. 
 
 ![*Microcebus rufus* survival graph for the petri dish experiment ](../Mouse_Lemur_Replication/Survival_rufus_petri_graph.png){width=500px} 
 
@@ -1259,6 +1265,9 @@ This is the original table.
 
 ![ ](../Mouse_Lemur_Replication/COX_table.png){width=1000px}
 
+<br><br>
+
+The End!
 
 <br><br>
 
