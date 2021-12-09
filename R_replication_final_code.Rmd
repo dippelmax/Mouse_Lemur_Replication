@@ -64,8 +64,9 @@ nrow(rufus_petri_yes)
 # This creates summary statistics for seedling growth for each species
 rufus_petri_yes_summary <- rufus_petri_yes %>% 
   group_by(scientificName, treatment) %>%
-  summarise(seedling_mean = mean(seedling_mm),
+  summarise(seedling_mean = mean(seedling_mm), germ_time = mean(germ_time),
             N = n())
+
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control. This step was not explicitly stated anywhere in the paper and it took me a very long time to figure it out.   
 rufus_petri_yes_summary_modified <- rufus_petri_yes_summary[-c(3, 4, 5, 6, 7, 12), ]
 sum(rufus_petri_yes_summary_modified$N)
@@ -120,7 +121,6 @@ jollyae_petri_yes_summary <- jollyae_petri_yes %>%
             N = n())
 ####  This line modifies the summary statistics to include only the species for which there is a defecated and control  
 jollyae_petri_yes_summary_modified <- jollyae_petri_yes_summary[-c(1, 2, 3), ]
-jollyae_petri_yes_summary_modified
 sum(jollyae_petri_yes_summary_modified$N)
 # 25
 ```
@@ -148,7 +148,6 @@ jollyae_closed_yes_summary <- jollyae_closed_yes %>%
             N = n())
 # This line modifies the summary statistics to include only the species for which there is a defecated and control  
 jollyae_closed_yes_summary_modified <- jollyae_closed_yes_summary[-c(5, 6), ]
-jollyae_closed_yes_summary_modified
 sum(jollyae_closed_yes_summary_modified$N)
 #43
 ```
@@ -275,8 +274,418 @@ This replicated figure is quite different from the original.
 
 ## Mixed Effects Models Analysis
 
+I am starting with the mixed effect model comparing seedling length across the fixed effect of treatment and the random effect of species
+
+Running the mixed effect model for rufus dispersed seeds in the petri dish experiment
+
+The study did not tell me wether the random effects of the model were slope, 
+intercept or slope and intercept. I tried all three for the first experiment. 
+
+```{r}
+# REML = FALSE, intercept model
+lme_rufus_petri_yes_summary_modified1 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_petri_yes_summary_modified1)
+```
+
+```{r}
+# REML = FALSE , slope model
+# lme_rufus_petri_yes_summary_modified2 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 + treatment | scientificName), REML = FALSE)
+# summary(lme_rufus_petri_yes_summary_modified2)
+# will not run 
+```
+
+The error given was: 
+
+Error: number of observations (=8) <= number of random effects (=8) for term (1 + treatment | scientificName); the random-effects parameters and the residual variance (or scale parameter) are probably unidentifiable
+
+```{r}
+# REML = FALSE , slope and intercept model
+# lme_rufus_petri_yes_summary_modified3 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName) + (1 + treatment | scientificName), REML = FALSE)
+# summary(lme_rufus_petri_yes_summary_modified3)
+# will not run
+```
+
+The error given was: 
+
+Error: number of observations (=8) <= number of random effects (=8) for term (1 + treatment | scientificName); the random-effects parameters and the residual variance (or scale parameter) are probably unidentifiable
+
+Based on some research, the error is telling me that I do not have a sufficient number of observations to support a model which is this complex. I will only use intercept models for the rest of the analysis. 
+
+After we have determined the model we will use, we can get the other parameters by running statitical test
+
+```{r}
+null1 <- lmer(data = rufus_petri_yes_summary_modified, seedling_mean ~ 1 + (1 | scientificName), REML = FALSE)
+summary(null1)
+```
+
+```{r}
+anova(null1, lme_rufus_petri_yes_summary_modified1, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_rufus_petri_yes_summary_modified1)
+```
+
+These are the statistics needed for the table
+β = 13.549
+z = 3.18796
+p = 0.0742
+R2M = 0.2205152
+R2C = 0.6833415
+
+Now I will run the rufus dispered forest ground experiment
+
+```{r}
+# lme_rufus_ground_yes_summary_modified1 <- lmer(data = rufus_ground_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+# summary(lme_rufus_ground_yes_summary_modified1)
+```
+
+It is impossible to do analysis with no more than one treatment 
+
+Now I will do the analysis for the the experiment from jollyae dispersed seeds in the petri dish
+
+```{r}
+# lme_jollyae_petri_yes_summary_modified1 <- lmer(data = jollyae_petri_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+# summary(lme_jollyae_petri_yes_summary_modified1)
+```
+
+seedling length = 0, cannot compare between treatments
+
+Now I will do the analysis for the the experiment from jollyae dispersed seeds in the semi-shaded plot experiment
+
+```{r}
+lme_jollyae_semi_yes_summary_modified1 <- lmer(data = jollyae_semi_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_semi_yes_summary_modified1)
+```
+
+```{r}
+null2 <- lmer(data = jollyae_semi_yes_summary_modified, seedling_mean ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null2, lme_jollyae_semi_yes_summary_modified1, test = "Chisq")
+```
+
+
+```{r}
+r.squaredGLMM(lme_jollyae_semi_yes_summary_modified1)
+```
+
+These are the statistics needed for the table
+ β = 1.774
+ z = 0.7167
+ p = 0.3972 
+ R2M = 0.04079902
+ R2C = 0.636132
+
+Now I will do the analysis for the the experiment from jollyae dispersed seeds in the shaded plot experiment
+
+```{r}
+lme_jollyae_closed_yes_summary_modified1 <- lmer(data = jollyae_closed_yes_summary_modified, seedling_mean ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_closed_yes_summary_modified1)
+```
+
+```{r}
+null3 <- lmer(data = jollyae_closed_yes_summary_modified, seedling_mean ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null3, lme_jollyae_closed_yes_summary_modified1, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_jollyae_closed_yes_summary_modified1)
+```
+
+These are the statistics needed for the table
+ β = 7.300
+ z = 6.1518
+ p = 0.01313
+ R2M = 0.8297392
+ R2C = 0.8297654
+
+
+I will now code for the mixed effect model comparing germination time across the fixed effect of treatment and the random effect of species
+
+
+Running the mixed effect model for rufus dispersed seeds in the petri dish experiment
+
+```{r}
+lme_rufus_petri_yes_summary_modified1_germ_time <- lmer(data = rufus_petri_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_petri_yes_summary_modified1_germ_time)
+```
+
+```{r}
+null4 <- lmer(data = rufus_petri_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null4, lme_rufus_petri_yes_summary_modified1_germ_time, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_rufus_petri_yes_summary_modified1_germ_time)
+```
+
+
+
+ β = -15.97
+ z = 0.9894
+ p = 0.3199
+ R2M = 0.1307745
+ R2C = 0.1307745
+
+Not doing the analysis for Microcebus rufus forest ground experiment (see above)
+
+Running the mixed effect model for jollyae dispersed seeds in the petri dish experiment
+
+This model does not work 
+
+```{r}
+# lme_jollyae_petri_yes_summary_modified1_germ_time <- lmer(data = jollyae_petri_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+# summary(lme_jollyae_petri_yes_summary_modified1_germ_time)
+```
+
+The error presented is:
+Error: grouping factors must have > 1 sampled level
+
+So since it is the mean germination time, the comparison only has two points. 
+I cannot run this analysis
+
+Running the mixed effect model for jollyae dispersed seeds in the semi-shaded plot experiment
+
+```{r}
+lme_jollyae_semi_yes_summary_modified1_germ_time <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_semi_yes_summary_modified1_germ_time)
+```
+
+```{r}
+null5 <- lmer(data = jollyae_semi_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null5, lme_jollyae_semi_yes_summary_modified1_germ_time, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_jollyae_semi_yes_summary_modified1_germ_time)
+```
+
+These are the statistics needed for the table
+ β = -5.183 
+ z = 0.4874
+ p = 0.4851
+ R2M = 0.04586151
+ R2C = 0.3807093
+
+Running the mixed effect model for jollyae dispersed seeds in the shaded plot experiment
+
+```{r}
+lme_jollyae_closed_yes_summary_modified1_germ_time <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_closed_yes_summary_modified1_germ_time)
+```
+
+```{r}
+null6 <- lmer(data = jollyae_closed_yes_summary_modified, germ_time ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null6, lme_jollyae_closed_yes_summary_modified1_germ_time, test = "Chisq")
+```
+
+
+```{r}
+r.squaredGLMM(lme_jollyae_closed_yes_summary_modified1_germ_time)
+```
+
+These are the statistics needed for the table
+ β = 0.6833
+ z = 0.01
+ p = 0.923
+ R2M = 0.003328367
+ R2C = 0.003328367
+
+<br>
+
+I will now code for the mixed effect model comparing Germination ratio across the fixed effect of treatment and the random effect of species
+
+<br>
+
+First I will run the model for seeds dispersed by Microcebus rufus in the petri dish experiment. 
+
+This code calculates the ratios of germinated seeds for all the indivdual species.
+
+```{r}
+rufus_petri_ratio_summary <- rufus_petri %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+            N = n())
+rufus_petri_ratio_summary_modified <- rufus_petri_ratio_summary[-c(3, 4, 5, 6, 7, 8, 9, 10, 15), ]
+```
+
+Now for the model
+
+```{r}
+lme_rufus_petri_ratio_summary_modified <- lmer(data = rufus_petri_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_petri_ratio_summary_modified)
+```
+
+```{r}
+null7 <- lmer(data = rufus_petri_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null7, lme_rufus_petri_ratio_summary_modified, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_rufus_petri_ratio_summary_modified)
+```
+
+
+These are the statistics needed for the table
+β = 0.2451
+z = 2.1965
+p = 0.1383
+R2M = 0.2085819
+R2C = 0.5011694
+
+Now, I will run the model for seeds dispersed by Microcebus rufus in the forest ground experiment. 
+
+This code calculates the ratios of germinated seeds for all the indivdual species
+
+```{r}
+rufus_ground_ratio_summary <- rufus_ground %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+rufus_ground_ratio_summary_modified <- rufus_ground_ratio_summary[-c(1, 2, 3, 8), ]
+```
+
+Now for the model
+
+```{r}
+lme_rufus_ground_ratio_summary_modified <- lmer(data = rufus_ground_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_rufus_ground_ratio_summary_modified)
+```
+
+```{r}
+null8 <- lmer(data = rufus_ground_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null8, lme_rufus_ground_ratio_summary_modified, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_rufus_ground_ratio_summary_modified)
+```
+
+These are the statistics needed for the table
+β = 3.182e-01
+z = 1.6219
+p = 0.2028
+R2M = 0.4
+R2C = 0.4000418
+
+Now, I will run the model for seeds dispersed by Microcebus jollyae in the petri dish experiment.
+This code calculates the ratios of germinated seeds for all the indivdual species.
+
+```{r}
+jollyae_petri_ratio_summary <- jollyae_petri %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+jollyae_petri_ratio_summary_modified <- jollyae_petri_ratio_summary
+```
+
+Now for the model
+
+```{r}
+lme_jollyae_petri_ratio_summary_modified <- lmer(data = jollyae_petri_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_petri_ratio_summary_modified)
+```
+
+```{r}
+null9 <- lmer(data = jollyae_petri_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null9, lme_jollyae_petri_ratio_summary_modified, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_jollyae_petri_ratio_summary_modified)
+```
+
+
+These are the statistics needed for the table
+β = 0.26584
+z = 4.0348
+p = 0.04457
+R2M = 0.42721
+R2C = 0.4633437
+
+Now I will run the model for seeds dispersed by Microcebus jollyae in the semi-shaded experiment,
+This code calculates the ratios of germinated seeds for all the indivdual species.
+
+```{r}
+jollyae_semi_ratio_summary <- jollyae_semi %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+jollyae_semi_ratio_summary_modified <- jollyae_semi_ratio_summary
+```
+
+Now for the model
+
+```{r}
+lme_jollyae_semi_ratio_summary_modified <- lmer(data = jollyae_semi_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_semi_ratio_summary_modified)
+```
+
+```{r}
+null10 <- lmer(data = jollyae_semi_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null10, lme_jollyae_semi_ratio_summary_modified, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_jollyae_semi_ratio_summary_modified)
+```
+
+These are the statistics needed for the table
+β = 0.18646
+z = 4.486
+p = 0.03417
+R2M = 0.1364723
+R2C = 0.8845932
+
+Now I will run the model for seeds dispersed by Microcebus jollyae in the shaded experiment.
+
+This code calculates the ratios of germinated seeds for all the indivdual species.
+
+```{r}
+jollyae_closed_ratio_summary <- jollyae_closed %>% 
+  group_by(scientificName, treatment) %>%
+  summarise( germ_ratio = mean(ratio),
+             N = n())
+jollyae_closed_ratio_summary_modified <- jollyae_closed_ratio_summary[-c(5), ]
+```
+
+Now for the model
+
+```{r}
+lme_jollyae_closed_ratio_summary_modified <- lmer(data = jollyae_closed_ratio_summary_modified, germ_ratio ~ treatment + (1 | scientificName), REML = FALSE)
+summary(lme_jollyae_closed_ratio_summary_modified)
+```
+
+```{r}
+null11 <- lmer(data = jollyae_closed_ratio_summary_modified, germ_ratio ~ 1 + (1 | scientificName), REML = FALSE)
+anova(null11, lme_jollyae_closed_ratio_summary_modified, test = "Chisq")
+```
+
+```{r}
+r.squaredGLMM(lme_jollyae_closed_ratio_summary_modified)
+```
+
+These are the statistics needed for the table
+β = -0.008769 
+z = 0.0076
+p = 0.9305
+R2M = 0.00100877
+R2C = 0.07302369
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+
+
 
 ## Survival analysis
+
+
+
+
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 
 This is the survival analysis for seeds dispersed by microcebus rufus in the petri dish experiment 
