@@ -34,6 +34,7 @@ library(ggpubr)
 library(MuMIn)
 library(tidyverse)
 library(survival)
+library(gt)
 ```
 
 Loading the data into R the first step of the analysis. This was more complicated than I intially realized because every numerical variable was actually loaded in as a factor When attempted to graph the results or run models, the results would have an error or not look as it should have. I used as.numeric to create new numeric varaibles in the data set which the R could read easily. 
@@ -272,7 +273,7 @@ Here is the original figure
 
 ![*Microcebus jollyae* violin graph](../Mouse_Lemur_Replication/Triple_violin_graph.png){width=500px}
 
-This replicated figure is quite different from the original. 
+This replicated figure is quite different from the original. Most noteably, the control treatment for the semi-shaded plot does not have any values greater than 10. I went back into the original data and there are no data points >10. There also seem to be slight differences in the semi-shaded plot defecated treatment and the shaded-plot defecated treatment violin shapes probably due to different data. 
 
 <br><br><br>
 
