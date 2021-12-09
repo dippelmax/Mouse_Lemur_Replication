@@ -694,6 +694,7 @@ summary(rufus_ground_yes_km_fit, times = c(1,15,30,45,60,75,90))
 
 # Next we plot the survival fit and make it look like the graph in the paper
 rufus_ground_yes_km_plot <- autoplot(rufus_ground_yes_km_fit) 
+rufus_ground_yes_km_plot
 rufus_ground_yes_km_plot + labs(title = "Microcebus rufus",subtitle = "Forest ground experiment", 
                                y = "Probability of germinating", x = "Time (days)") +
   theme(plot.title = element_text(face = "italic")) +
@@ -735,7 +736,7 @@ jollyae_petri_yes_km_fit
 summary(jollyae_petri_yes_km_fit, times = c(1,15,30,45,60,75,90))
 
 # Next we plot the survival fit and make it look like the graph in the paper
-jollyae_petri_yes_km_plot <- autoplot(jollyae_petri_yes_km_fit) 
+jollyae_petri_yes_km_plot <- autoplot(jollyae_petri_yes_km_fit)
 jollyae_petri_yes_km_plot
 
 # Error: Aesthetics can not vary with a ribbon
@@ -1033,6 +1034,33 @@ t3_sur <- t2_sur %>% gt() %>%
 t3_sur
 
 
+N_values <- c("N observations in replication", "N observations germinated in replication",
+              "N observations only including species with both treatments in replication",
+              "Original study total sample size", "Original study actually analyzed")
+r_p_n <- c(685, 121, 88, 150, 88)
+r_f_n <- c(231, 7, 7, 75, 7)
+j_p_n <- c(528, 70, 25, 528, 70)
+j_s_n <- c(660, 233, 233, 660, 233)
+j_c_n <- c(694, 61, 43, 377, 47)
+
+t1_n <- cbind(N_values, r_p_n, r_f_n, j_p_n, j_s_n, j_c_n)
+t1_n
+t2_n <- as.data.frame(t1_n)
+t3_n <- t2_n %>% gt() %>%
+  cols_label(N_values = "Values", r_p_n = "Petri dish experiment",
+             r_f_n = "Forest ground experiment", j_p_n = "Petri Dish Experiment", 
+             j_s_n = "Semi-Shaded plot experiment", j_c_n = "Shaded-plot experiment") %>% 
+  tab_header(title = md("Varying N values table: replication vs. original")) %>%
+  tab_spanner(label = "Microcebus rufus", columns = c(r_p_n, r_f_n)) %>%
+  tab_spanner(label = "Microcebus Jollyae", columns = c(j_p_n, j_s_n, j_c_n)) %>%
+  tab_style( style = list( cell_text(color = "red")), locations = cells_body(columns = c(2,3,6) , rows = 4 )) %>%
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 2 , rows = c(3,5) )) %>%
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 3 , rows = c(2,3,5) )) %>%
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 4 , rows = c(2,5) )) %>% 
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 5 , rows = c(2,3,5) )) %>% 
+  tab_source_note(source_note = "Bold text signifies which values study seems to actally analysed. Red text signifies unknown values.")
+
+t3_n
 
 ################################# The End ########################################
 
