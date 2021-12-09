@@ -189,6 +189,51 @@ The number of total observations in the experiment is 660. The number of observa
 
 The researchers seemed to have used the final summary (n=233) for the number of observations actually analyzed (n=233). There were no single experiment species so there are no differences between the number germinated and the final summary. 
 
+<br> 
+Now, I am going to create a table for the N values for easier vizualization. 
+
+Legend for table construction object:
+
+Species: r = *Microcebus rufus*, j = *Microcebus jollyae*
+
+Experiment: p = Petri dish, f = Forest ground, s = semi-shaded plot, c = shaded plot
+
+Study: rep = replication, og = original
+
+Model: n = Number of observations l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
+
+```{r}
+N_values <- c("N observations in replication", "N observations germinated in replication",
+              "N observations only including species with both treatments in replication",
+              "Original study total sample size", "Original study actually analyzed")
+r_p_n <- c(685, 121, 88, 150, 88)
+r_f_n <- c(231, 7, 7, 75, 7)
+j_p_n <- c(528, 70, 25, 528, 70)
+j_s_n <- c(660, 233, 233, 660, 233)
+j_c_n <- c(694, 61, 43, 377, 47)
+
+t1_n <- cbind(N_values, r_p_n, r_f_n, j_p_n, j_s_n, j_c_n)
+t2_n <- as.data.frame(t1_n)
+t3_n <- t2_n %>% gt() %>%
+  cols_label(N_values = "Values", r_p_n = "Petri dish experiment",
+             r_f_n = "Forest ground experiment", j_p_n = "Petri Dish Experiment", 
+             j_s_n = "Semi-Shaded plot experiment", j_c_n = "Shaded-plot experiment") %>% 
+  tab_header(title = md("Varying N values table: replication vs. original")) %>%
+  tab_spanner(label = "Microcebus rufus", columns = c(r_p_n, r_f_n)) %>%
+  tab_spanner(label = "Microcebus Jollyae", columns = c(j_p_n, j_s_n, j_c_n)) %>%
+  tab_style( style = list( cell_text(color = "red")), locations = cells_body(columns = c(2,3,6) , rows = 4 )) %>%
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 2 , rows = c(3,5) )) %>%
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 3 , rows = c(2,3,5) )) %>%
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 4 , rows = c(2,5) )) %>% 
+  tab_style( style = list( cell_text(weight = "bold")), locations = cells_body(columns = 5 , rows = c(2,3,5) )) %>% 
+  tab_source_note(source_note = "Bold text signifies which values study seems to actally analysed. Red text signifies unknown values.")
+
+t3_n
+```
+
+
+
+
 <br><br><br>
 
 ## Violin graphs
@@ -434,7 +479,7 @@ Experiment: p = Petri dish, f = Forest ground, s = semi-shaded plot, c = shaded 
 
 Study: rep = replication, og = original
 
-Model: l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
+Model: n = Number of observations l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
 
 ```{r}
 r_p_rep_l <- c("β = 13.549", "z = 3.18796", "p = 0.0742", "R2M = 0.2205152", "R2C = 0.6833415")
@@ -603,7 +648,7 @@ Experiment: p = Petri dish, f = Forest ground, s = semi-shaded plot, c = shaded 
 
 Study: rep = replication, og = original
 
-Model: l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
+Model: n = Number of observations l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
 
 ```{r}
 r_p_rep_t <- c("β = -15.97", "z = 0.9894", "p = 0.3199", "R2M = 0.1307745", "R2C = 0.1307745")
@@ -864,7 +909,7 @@ Experiment: p = Petri dish, f = Forest ground, s = semi-shaded plot, c = shaded 
 
 Study: rep = replication, og = original
 
-Model: l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
+Model: n = Number of observations l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
 
 ```{r}
 r_p_rep_r <- c("β = 0.2451", "z = 2.1965", "p = 0.1383", "R2M = 0.2085819", "R2C = 0.5011694")
@@ -1170,7 +1215,7 @@ Experiment: p = Petri dish, f = Forest ground, s = semi-shaded plot, c = shaded 
 
 Study: rep = replication, og = original
 
-Model: l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
+Model: n = Number of observations l = Seedling length, t = Germination time, r = germination rate, sur = survival analysis
 
 ```{r}
 r_p_rep_sur <- c("X^2 = 41.38", "df = 1", "p = 1e-10")
