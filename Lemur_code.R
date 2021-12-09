@@ -886,9 +886,6 @@ summary(jollyae_closed_yes_cox)
 #########################################################################
 
 
-# I am starting with the mixed effect model comparing seedling length across the 
-# fixed effect of treatment and the random effect of species
-
 library(dplyr)
 library(scales)
 library(gt)
@@ -977,25 +974,41 @@ j_s_og_r <- c("β = 0.95", "z=3.57", "p<.001", "R2M = 0.04", "R2C = 0.28")
 j_c_rep_r <- c("β = -0.008769", "z = 0.0076", "p = 0.9305", "R2M = 0.00100877", "R2C = 0.07302369")
 j_c_og_r <- c("β = −0.89", "z=−2.73", "p < .01", "R2M = 0.02", "R2C = 0.18")
 
-
-
+t1_r <- cbind(r_p_rep_r, r_p_og_r, r_f_rep_r, r_f_og_r, j_p_rep_r,
+              j_p_og_r, j_s_rep_r, j_s_og_r, j_c_rep_r, j_c_og_r)
+t2_r <- as.data.frame(t1_r)
+t3_r <- t2_r %>% gt() %>%
+  cols_label(r_p_rep_r = "Petri dish experiment replication values",
+             r_p_og_r = "Petri dish experiment original values", 
+             r_f_rep_r = "Forest ground experiment replication values",
+             r_f_og_r = "Forest ground experiment original values",
+             j_p_rep_r = "Petri dish experiment replication values",
+             j_p_og_r = "Petri dish experiment original values",
+             j_s_rep_r = "Semi-shaded plot experiment replication values",
+             j_s_og_r = "Semi-shaded plot experiment original values",
+             j_c_rep_r = "Shaded plot experiment replication values",
+             j_c_og_r = "Shaded plot experiment original values") %>% 
+  tab_header(title = md("Summary table of the linear mixed-effects models of germination rate")) %>%
+  tab_spanner(label = "*Microcebus rufus*", columns = c(r_p_rep_r, r_p_og_r, r_f_rep_r, r_f_og_r)) %>%
+  tab_spanner(label = "*Microcebus jollyae*", columns = c(j_p_rep_r, j_p_og_r, j_s_rep_r, j_s_og_r, j_c_rep_r, j_c_og_r))
+t3_r
 
 # Survival analysis table
 
 
-# Microcebus rufus petri dish experiment 
+
 r_p_rep_sur <- c("X^2 = 41.38", "df = 1", "p = 1e-10")
 r_p_og_sur <- c("X^2 = 20.62", "df = 1", "p < .0001")
-# Microcebus rufus forest ground experiment
+
 r_f_rep_sur <- c("X^2 = NA", "df = NA", "p = NA")
 r_f_og_sur <- c("X^2 = NA", "df = NA", "p = NA")
-# Microcebus jollyae petri dish experiment
+
 j_p_rep_sur <- c("X^2 = 0.02", "df = 1","p = 0.9")
 j_p_og_sur <- c("X^2 = 66.08", "df = 1", "p = .96")
-# Microcebus jollyae semi-shaded plot experiment 
+
 j_s_rep_sur <- c("X^2 = 1.4", "df = 1", "p = 0.2")
 j_s_og_sur <- c("X^2 = 1.60", "df = 1", "p = .20")
-# Microcebus jollyae Shaded plot experiment 
+
 j_c_rep_sur <- c("X^2 = 0.17", "df = 1", "p = .7")
 j_c_og_sur <- c("X2 = 0.30", "df = 1", "p = .56")
 
